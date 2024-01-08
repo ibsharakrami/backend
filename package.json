@@ -2,9 +2,10 @@
   "name": "ibsharcodes",
   "version": "1.0.0",
   "description": "ibsharcode backend",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js"
   },
   "keywords": [
     "javascrpt",
@@ -12,8 +13,5 @@
     "code"
   ],
   "author": "ibshar ahmed",
-  "license": "ISC",
-  "devDependencies": {
-    "nodemon": "^3.0.2"
-  }
+  "license": "ISC"
 }

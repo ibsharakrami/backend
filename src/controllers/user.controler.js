@@ -3,7 +3,7 @@ import {ApiError} from "../utils/ApiError.js"
 import { User } from "../models/user.model.js"
 import { uploadOnCloundinary } from "../utils/cloudnary.js"
 import { upload } from "../middlewares/multer.middleware.js";
-
+import { ApiResponse } from "../utils/ApiResponse.js"
 
 const registerUser = asyncHandle( async (req , res) => {
     const {fullName , email , username , password} = req.body
@@ -38,6 +38,27 @@ const registerUser = asyncHandle( async (req , res) => {
     if(!avatar) {
       throw new ApiError(400 , "Avatar file is required")
     }
+    const user = User.create({
+      fullName,
+      avatar : avatar.url,
+      coverImage :coverImage?.url || "",
+      email,
+      password,
+      username  : username.toLowerCase()
+    })
+
+   const createUser = await User.findById(user._id).select(
+    "-password -refreshToken"
+   )
+   if(!createUser) {
+    throw new ApiError(500 ,"Something went wrong while registering the user")
+   }
+
+   return res.status(201).json(
+     new ApiResponse(200 , createUser , "User Register Successfully")
+   )
+
+
 
 
 })

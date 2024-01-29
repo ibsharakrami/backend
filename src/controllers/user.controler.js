@@ -41,7 +41,7 @@ const registerUser = asyncHandle( async (req , res) => {
     if(!coverImage) {
       throw new ApiError(400 , "coverImage file is required")
     }
-    const user = User.create({
+    const user =await User.create({
       fullname,
       avatar : avatar.url,
       coverImage :coverImage.url,

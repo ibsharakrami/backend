@@ -1,1 +1,1 @@
-export const DB_NAME = "IBSHARCODES"
+export const DB_NAME = "ibshar"

@@ -6,22 +6,22 @@ import { upload } from "../middlewares/multer.middleware.js";
 import { ApiResponse } from "../utils/ApiResponse.js"
 
 const registerUser = asyncHandle( async (req , res) => {
-    const {fullName , email , username , password} = req.body
-    console.log("Fullname==>",fullName)
+    const {fullname , email , username , password} = req.body
+    console.log("Fullname==>",fullname)
 
     if (
-      [fullName , email, username, password].some((field)=>
+      [fullname , email, username, password].some((field)=>
     field?.trim() === "")
     ) {
       throw new ApiError(400,"All Field is required")
     }
 
-    const existUser = User.findOne({
+    const existUser = await User.findOne({
       $or: [{username} ,  {email}]
     })
 
     if(existUser) {
-      throw new ApiError(409 , "User with email or username already exists")
+      throw new ApiError(409 , "User with email or username already existssss")
     }
 
     const avatarLocalPath =  req.files?.avatar[0]?.path;
@@ -38,10 +38,13 @@ const registerUser = asyncHandle( async (req , res) => {
     if(!avatar) {
       throw new ApiError(400 , "Avatar file is required")
     }
+    if(!coverImage) {
+      throw new ApiError(400 , "coverImage file is required")
+    }
     const user = User.create({
-      fullName,
+      fullname,
       avatar : avatar.url,
-      coverImage :coverImage?.url || "",
+      coverImage :coverImage.url,
       email,
       password,
       username  : username.toLowerCase()

@@ -107,8 +107,54 @@ const loginUser = asyncHandle( async (req , res) => {
   if(!isPasswordValid) {
     throw new ApiError(401 ,"Invalid user credentails")
   }
+  const {accessToken , refreshToken} = await generateAccessAndRefereshTokens(user._id)
 
+  const LoggedInUser = User.findById(user._id).select("-password -refreshToken")
+
+  const options = {
+    httpOnly : true,
+    secure : true
+ }
+
+ return res
+ .status(200)
+ .cookie("accessToken",accessToken,options)
+ .cookie("refreshToken",refreshToken,options)
+ .json(
+  new ApiResponse(
+    200,
+    {
+      user : LoggedInUser ,accessToken ,refreshToken
+
+    },
+    "User logged in Successfully"
+  )
+ )
 
 })
 
-export {registerUser , loginUser}
+const logoutUser = asyncHandle(async(req ,res) =>{
+    await User.findByIdAndUpdate(
+      req.user._id,{
+        $set :{
+          refreshToken : undefined
+        }
+      },
+      {
+        new: true
+      }
+    )
+    const options = {
+      httpOnly : true,
+      secure : true
+   }
+
+   return res
+   .status(200)
+   .clearCookie("accessToken",options)
+   .clearCookie("refreshToken",options)
+   .json(new ApiResponse(200 ,{},"User logged Out"))
+})
+
+
+export {registerUser , loginUser , logoutUser}

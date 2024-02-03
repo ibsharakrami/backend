@@ -70,4 +70,45 @@ const registerUser = asyncHandle( async (req , res) => {
 
 })
 
-export {registerUser}
+const generateAccessAndRefereshTokens = async(userId) => {
+   try{
+        const user = await User.findById(userId)
+        const accessToken = user.generateAccessToken()
+        const refreshToken = user.generateRefreshToken()
+
+        user.refreshToken = refreshToken
+        user.save({validateBeforeSave : false})
+
+        return {accessToken, refreshToken  }
+
+   }catch(error) {
+    throw new ApiError(500 ,"Something went wrong while generating refresh and access token")
+   }
+}
+
+
+const loginUser = asyncHandle( async (req , res) => {
+  const {email , username , password} = req.body
+
+  if(!username || !email) {
+    throw new ApiError(400 ,"Username or email is required")
+  }
+
+  const user = await User.findOne({
+    $or: [{username}, {email}]
+  })
+
+  if(!user) {
+    throw new ApiError(404 ,"USer does not exist")
+  }
+
+  const isPasswordValid = await user.isPasswordCorrect(password)
+
+  if(!isPasswordValid) {
+    throw new ApiError(401 ,"Invalid user credentails")
+  }
+
+
+})
+
+export {registerUser , loginUser}
